@@ -187,3 +187,41 @@ def test_is_cycle():
         Line((0, 0), (0, 1)),
         Line((0, 1), (0, 0)),
     )
+    assert is_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 2)),
+        Line((0, 2), (0, 3)),
+        Line((0, 3), (0, 4)),
+        Line((0, 4), (0, 0)),
+    )
+    assert is_cycle(
+        Line((0, 2), (0, 3)),
+        Line((0, 4), (0, 0)),
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 2)),
+        Line((0, 3), (0, 4)),
+    )
+    assert is_cycle(
+        Line((0, 3), (0, 2)),
+        Line((0, 4), (0, 0)),
+        Line((0, 0), (0, 1)),
+        Line((0, 2), (0, 1)),
+        Line((0, 3), (0, 4)),
+    )
+
+    assert not is_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 2)),
+    )
+    assert not is_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 0)),
+        Line((0, 1), (0, 0)),
+    )
+    assert not is_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 0)),
+
+        Line((0, 2), (0, 3)),
+        Line((0, 3), (0, 2)),
+    )

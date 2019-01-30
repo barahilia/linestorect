@@ -196,5 +196,4 @@ def is_cycle(*lines):
         vertex, edge = next_vertex, next_edge
 
     assert len(visited) <= len(lines)
-
     return len(visited) == len(lines)
