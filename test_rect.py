@@ -1,5 +1,5 @@
 from rect import Line, Rect, rects, at_right_angle, is_rect, is_polyline, \
-    is_cycle
+    is_cycle, get_cycle
 
 
 def test_interface():
@@ -94,17 +94,6 @@ def test_two_rects():
     ) == [
         Rect((0, 0), (0, 1), (1, 1), (1, 0)),
         Rect((0, 1), (1, 1), (1, 2), (0, 2)),
-    ]
-
-
-def xtest_switched_line():
-    assert rects(
-        Line((0, 1), (0, 0)),
-        Line((0, 1), (1, 1)),
-        Line((1, 1), (1, 0)),
-        Line((1, 0), (0, 0)),
-    ) == [
-        Rect((0, 0), (0, 1), (1, 1), (1, 0))
     ]
 
 
@@ -225,3 +214,64 @@ def test_is_cycle():
         Line((0, 2), (0, 3)),
         Line((0, 3), (0, 2)),
     )
+
+
+def test_get_cycle():
+    assert get_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 0)),
+    ) == [(0, 0), (0, 1)]
+
+    assert get_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 2)),
+        Line((0, 2), (0, 3)),
+        Line((0, 3), (0, 4)),
+        Line((0, 4), (0, 0)),
+    ) == [(0, 0), (0, 4), (0, 3), (0, 2), (0, 1)]
+
+    assert get_cycle(
+        Line((0, 2), (0, 3)),
+        Line((0, 4), (0, 0)),
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 2)),
+        Line((0, 3), (0, 4)),
+    ) == [(0, 2), (0, 1), (0, 0), (0, 4), (0, 3)]
+
+    assert get_cycle(
+        Line((0, 3), (0, 2)),
+        Line((0, 4), (0, 0)),
+        Line((0, 0), (0, 1)),
+        Line((0, 2), (0, 1)),
+        Line((0, 3), (0, 4)),
+    ) == [(0, 3), (0, 4), (0, 0), (0, 1), (0, 2)]
+
+    assert get_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 2)),
+    ) == None
+
+    assert get_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 0)),
+        Line((0, 1), (0, 0)),
+    ) == None
+
+    assert get_cycle(
+        Line((0, 0), (0, 1)),
+        Line((0, 1), (0, 0)),
+
+        Line((0, 2), (0, 3)),
+        Line((0, 3), (0, 2)),
+    ) == None
+
+
+def xtest_switched_line():
+    assert rects(
+        Line((0, 1), (0, 0)),
+        Line((0, 1), (1, 1)),
+        Line((1, 1), (1, 0)),
+        Line((1, 0), (0, 0)),
+    ) == [
+        Rect((0, 0), (0, 1), (1, 1), (1, 0))
+    ]

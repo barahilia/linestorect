@@ -178,7 +178,6 @@ def is_cycle(*lines):
     vertex = edge.a
     visited = set()
 
-
     while edge not in visited:
         visited.add(edge)
 
@@ -197,3 +196,45 @@ def is_cycle(*lines):
 
     assert len(visited) <= len(lines)
     return len(visited) == len(lines)
+
+
+def _get_cycle(lines):
+    graph = _make_graph(lines)
+
+    edge = lines[0]
+    vertex = edge.a
+    visited = set()
+
+    while edge not in visited:
+        yield vertex
+
+        visited.add(edge)
+        assert len(visited) <= len(lines)
+
+        edges = graph[vertex]
+
+        if len(edges) != 2:
+            return
+
+        assert edge in edges
+        next_edge = edges[1] if edge == edges[0] else edges[0]
+
+        assert vertex in [next_edge.a, next_edge.b]
+        next_vertex = next_edge.b if vertex == next_edge.a else next_edge.a
+
+        vertex, edge = next_vertex, next_edge
+
+    yield vertex
+
+
+def get_cycle(*lines):
+    if not lines:
+        return None
+
+    vertexes = list(_get_cycle(lines))
+
+    if len(vertexes) == len(lines) + 1:
+        if vertexes[0] == vertexes[-1]:
+            return vertexes[:-1]
+
+    return None
