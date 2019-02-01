@@ -1,5 +1,5 @@
 from collections import namedtuple, defaultdict
-from itertools import permutations
+from itertools import combinations
 
 
 Line = namedtuple('Line', ['a', 'b'])
@@ -34,7 +34,7 @@ def _are_rect_lines(l1, l2):
     return at_right_angle(a, b, d)
 
 
-def get_rect(*lines):
+def get_rect_old(*lines):
     assert len(lines) == 4
 
     points = [line.a for line in lines]
@@ -51,7 +51,7 @@ def get_rect(*lines):
 
 
 def _rects(lines):
-    for quadro in permutations(lines, 4):
+    for quadro in combinations(lines, 4):
         rect = get_rect(*quadro)
 
         if rect is not None:
@@ -236,5 +236,28 @@ def get_cycle(*lines):
     if len(vertexes) == len(lines) + 1:
         if vertexes[0] == vertexes[-1]:
             return vertexes[:-1]
+
+    return None
+
+
+def get_rect(*lines):
+    assert len(lines) == 4
+
+    cycle = get_cycle(*lines)
+
+    if cycle is None:
+        return None
+
+    a, b, c, d = cycle
+
+    all_right_angle = (
+        at_right_angle(a, b, c) and
+        at_right_angle(b, c, d) and
+        at_right_angle(c, d, a) and
+        at_right_angle(d, a, b)
+    )
+
+    if all_right_angle:
+        return Rect(*cycle)
 
     return None

@@ -2,29 +2,56 @@ from rect import Line, Rect, rects, at_right_angle, is_rect, is_polyline, \
     is_cycle, get_cycle
 
 
+def same_rect(r, q):
+    return r in [
+        # forward: a -> b -> c -> d
+        Rect(q.a, q.b, q.c, q.d),
+        Rect(q.d, q.a, q.b, q.c),
+        Rect(q.c, q.d, q.a, q.b),
+        Rect(q.b, q.c, q.d, q.a),
+
+        # opposite: d -> c -> b -> a
+        Rect(q.d, q.c, q.b, q.a),
+        Rect(q.a, q.d, q.c, q.b),
+        Rect(q.b, q.a, q.d, q.c),
+        Rect(q.c, q.b, q.a, q.d),
+    ]
+
+
+def verify(lines, expected):
+    res = rects(*lines)
+
+    if len(res) != len(expected):
+        assert False
+
+    for r, q in zip(res, expected):
+        assert same_rect(r, q)
+
+
 def test_interface():
     assert rects() == []
 
 
 def test_unit_square():
-    assert rects(
+    verify([
         Line((0, 0), (0, 1)),
         Line((0, 1), (1, 1)),
         Line((1, 1), (1, 0)),
         Line((1, 0), (0, 0))
-    ) == [
+    ],
+    [
         Rect(
             (0, 0),
             (0, 1),
             (1, 1),
             (1, 0)
         )
-    ]
+    ])
 
 
 def test_gap():
     assert rects(
-        Line((0, 0), (0, 0)),
+        Line((0, 0), (0, 2)),
         Line((0, 1), (1, 1)),
         Line((1, 1), (1, 0)),
         Line((1, 0), (0, 0))
@@ -66,23 +93,24 @@ def test_right_angle():
 
 
 def test_mixed_lines():
-    assert rects(
+    verify([
         Line((0, 0), (0, 1)),
         Line((1, 0), (0, 0)),
         Line((1, 1), (1, 0)),
         Line((0, 1), (1, 1)),
-    ) == [
+    ],
+    [
         Rect(
             (0, 0),
             (0, 1),
             (1, 1),
             (1, 0)
         )
-    ]
+    ])
 
 
 def test_two_rects():
-    assert rects(
+    verify([
         Line((0, 0), (0, 1)),
         Line((1, 0), (0, 0)),
         Line((1, 1), (1, 0)),
@@ -91,10 +119,10 @@ def test_two_rects():
         Line((1, 1), (1, 2)),
         Line((1, 2), (0, 2)),
         Line((0, 2), (0, 1)),
-    ) == [
+    ], [
         Rect((0, 0), (0, 1), (1, 1), (1, 0)),
         Rect((0, 1), (1, 1), (1, 2), (0, 2)),
-    ]
+    ])
 
 
 def test_has_four_edges():
@@ -266,12 +294,12 @@ def test_get_cycle():
     ) == None
 
 
-def xtest_switched_line():
-    assert rects(
+def test_switched_line():
+    verify([
         Line((0, 1), (0, 0)),
         Line((0, 1), (1, 1)),
         Line((1, 1), (1, 0)),
         Line((1, 0), (0, 0)),
-    ) == [
+    ], [
         Rect((0, 0), (0, 1), (1, 1), (1, 0))
-    ]
+    ])
