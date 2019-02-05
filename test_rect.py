@@ -1,30 +1,29 @@
 from rect import Line, Rect, rects, at_right_angle, get_cycle
 
 
-def same_rect(r, q):
-    return r in [
+def _standard_rect(r):
+    return min(
         # forward: a -> b -> c -> d
-        Rect(q.a, q.b, q.c, q.d),
-        Rect(q.d, q.a, q.b, q.c),
-        Rect(q.c, q.d, q.a, q.b),
-        Rect(q.b, q.c, q.d, q.a),
+        (r.a, r.b, r.c, r.d),
+        (r.d, r.a, r.b, r.c),
+        (r.c, r.d, r.a, r.b),
+        (r.b, r.c, r.d, r.a),
 
         # opposite: d -> c -> b -> a
-        Rect(q.d, q.c, q.b, q.a),
-        Rect(q.a, q.d, q.c, q.b),
-        Rect(q.b, q.a, q.d, q.c),
-        Rect(q.c, q.b, q.a, q.d),
-    ]
+        (r.d, r.c, r.b, r.a),
+        (r.a, r.d, r.c, r.b),
+        (r.b, r.a, r.d, r.c),
+        (r.c, r.b, r.a, r.d),
+    )
 
 
 def verify(lines, expected):
-    res = rects(*lines)
+    result = rects(*lines)
 
-    if len(res) != len(expected):
-        assert False
+    result = map(_standard_rect, result)
+    expected = map(_standard_rect, expected)
 
-    for r, q in zip(res, expected):
-        assert same_rect(r, q)
+    return set(result) == set(expected)
 
 
 def test_interface():
