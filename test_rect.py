@@ -23,7 +23,31 @@ def verify(lines, expected):
     result = map(_standard_rect, result)
     expected = map(_standard_rect, expected)
 
-    return set(result) == set(expected)
+    assert set(result) == set(expected)
+
+
+def _point(s):
+    return tuple(map(int, s))
+
+
+def _points(s):
+    return map(_point, s.split('-'))
+
+
+def _line(s):
+    return Line(*_points(s))
+
+
+def _lines(s):
+    return map(_line, s.split())
+
+
+def _rect(s):
+    return Rect(*_points(s))
+
+
+def _rects(s):
+    return map(_rect, s.split())
 
 
 def test_interface():
@@ -31,154 +55,71 @@ def test_interface():
 
 
 def test_unit_square():
-    verify([
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (1, 1)),
-        Line((1, 1), (1, 0)),
-        Line((1, 0), (0, 0))
-    ],
-    [
-        Rect(
-            (0, 0),
-            (0, 1),
-            (1, 1),
-            (1, 0)
-        )
-    ])
+    verify(
+        _lines('00-01 01-11 11-10 10-00'),
+        _rects('00-01-11-10')
+    )
 
 
 def test_gap():
-    assert rects(
-        Line((0, 0), (0, 2)),
-        Line((0, 1), (1, 1)),
-        Line((1, 1), (1, 0)),
-        Line((1, 0), (0, 0))
-    ) == []
-
-    assert rects(
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (1, 2)),
-        Line((1, 1), (1, 0)),
-        Line((1, 0), (0, 0))
-    ) == []
-
-    assert rects(
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (1, 1)),
-        Line((1, 1), (1, 0)),
-        Line((1, 0), (2, 0))
-    ) == []
+    assert rects(*_lines('00-02 01-11 11-10 10-00')) == []
+    assert rects(*_lines('00-01 01-12 11-10 10-00')) == []
+    assert rects(*_lines('00-01 01-11 11-10 10-02')) == []
 
 
 def test_right_angle():
-    assert at_right_angle((1, 0), (0, 0), (0, 1)) == True
-    assert at_right_angle((5, 0), (1, 0), (1, 1)) == True
-    assert at_right_angle((0, 0), (1, 0), (1, -1)) == True
-    assert at_right_angle((1, 2), (0, 1), (1, 0)) == True
+    assert at_right_angle(*_points('10-00-01'))
+    assert at_right_angle(*_points('50-10-11'))
+    assert at_right_angle(*_points('33-13-12'))
+    assert at_right_angle(*_points('12-01-10'))
 
-    assert at_right_angle((1, 1), (0, 0), (0, 1)) == False
-    assert at_right_angle((2, 0), (1, 1), (1, 2)) == False
-    assert at_right_angle((0, 0), (1, 0), (2, 0)) == False
+    assert not at_right_angle(*_points('11-00-01'))
+    assert not at_right_angle(*_points('20-11-12'))
+    assert not at_right_angle(*_points('00-10-20'))
 
 
 def test_non_right_angle():
-    assert rects(
-        Line((0, 0), (0, 2)),
-        Line((0, 2), (1, 1)),
-        Line((1, 1), (1, 0)),
-        Line((1, 0), (0, 0))
-    ) == []
+    verify(
+        _lines('00-02 02-11 11-10 10-00'),
+        []
+    )
 
 
 def test_mixed_lines():
-    verify([
-        Line((0, 0), (0, 1)),
-        Line((1, 0), (0, 0)),
-        Line((1, 1), (1, 0)),
-        Line((0, 1), (1, 1)),
-    ],
-    [
-        Rect(
-            (0, 0),
-            (0, 1),
-            (1, 1),
-            (1, 0)
-        )
-    ])
+    verify(
+        _lines('00-01 10-00 11-10 01-11'),
+        _rects('00-01-11-10')
+    )
 
 
 def test_two_rects():
-    verify([
-        Line((0, 0), (0, 1)),
-        Line((1, 0), (0, 0)),
-        Line((1, 1), (1, 0)),
-        Line((0, 1), (1, 1)),
-
-        Line((1, 1), (1, 2)),
-        Line((1, 2), (0, 2)),
-        Line((0, 2), (0, 1)),
-    ], [
-        Rect((0, 0), (0, 1), (1, 1), (1, 0)),
-        Rect((0, 1), (1, 1), (1, 2), (0, 2)),
-    ])
+    verify(
+        _lines('00-01 10-00 11-10 01-11 11-12 12-02 02-01'),
+        _rects('00-01-11-10 01-11-12-02')
+    )
 
 
 def test_get_cycle():
-    assert get_cycle(
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (0, 0)),
-    ) == [(0, 0), (0, 1)]
+    assert get_cycle(*_lines(
+        '00-01 01-00')) == _points('00-01')
 
-    assert get_cycle(
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (0, 2)),
-        Line((0, 2), (0, 3)),
-        Line((0, 3), (0, 4)),
-        Line((0, 4), (0, 0)),
-    ) == [(0, 0), (0, 4), (0, 3), (0, 2), (0, 1)]
+    assert get_cycle(*_lines(
+        '00-01 01-02 02-03 03-04 04-00')) == _points('00-04-03-02-01')
 
-    assert get_cycle(
-        Line((0, 2), (0, 3)),
-        Line((0, 4), (0, 0)),
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (0, 2)),
-        Line((0, 3), (0, 4)),
-    ) == [(0, 2), (0, 1), (0, 0), (0, 4), (0, 3)]
+    assert get_cycle(*_lines(
+        '02-03 04-00 00-01 01-02 03-04')) == _points('02-01-00-04-03')
 
-    assert get_cycle(
-        Line((0, 3), (0, 2)),
-        Line((0, 4), (0, 0)),
-        Line((0, 0), (0, 1)),
-        Line((0, 2), (0, 1)),
-        Line((0, 3), (0, 4)),
-    ) == [(0, 3), (0, 4), (0, 0), (0, 1), (0, 2)]
+    assert get_cycle(*_lines(
+        '03-02 04-00 00-01 02-01 03-04')) == _points('03-04-00-01-02')
 
-    assert get_cycle(
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (0, 2)),
-    ) == None
-
-    assert get_cycle(
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (0, 0)),
-        Line((0, 1), (0, 0)),
-    ) == None
-
-    assert get_cycle(
-        Line((0, 0), (0, 1)),
-        Line((0, 1), (0, 0)),
-
-        Line((0, 2), (0, 3)),
-        Line((0, 3), (0, 2)),
-    ) == None
+    assert get_cycle(*_lines('00-01 01-02')) == None
+    assert get_cycle(*_lines('00-01 01-00 01-00')) == None
+    assert get_cycle(*_lines('00-01 00-10 00-11')) == None
+    assert get_cycle(*_lines('00-01 01-00 02-03 03-02')) == None
 
 
 def test_switched_line():
-    verify([
-        Line((0, 1), (0, 0)),
-        Line((0, 1), (1, 1)),
-        Line((1, 1), (1, 0)),
-        Line((1, 0), (0, 0)),
-    ], [
-        Rect((0, 0), (0, 1), (1, 1), (1, 0))
-    ])
+    verify(
+        _lines('01-00 01-11 11-10 10-00'),
+        _rects('00-01-11-10')
+    )
