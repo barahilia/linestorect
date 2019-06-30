@@ -31,7 +31,7 @@ def _point(s):
 
 
 def _points(s):
-    return map(_point, s.split('-'))
+    return list(map(_point, s.split('-')))
 
 
 def _line(s):
