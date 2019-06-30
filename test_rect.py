@@ -112,10 +112,10 @@ def test_get_cycle():
     assert get_cycle(*_lines(
         '03-02 04-00 00-01 02-01 03-04')) == _points('03-04-00-01-02')
 
-    assert get_cycle(*_lines('00-01 01-02')) == None
-    assert get_cycle(*_lines('00-01 01-00 01-00')) == None
-    assert get_cycle(*_lines('00-01 00-10 00-11')) == None
-    assert get_cycle(*_lines('00-01 01-00 02-03 03-02')) == None
+    assert get_cycle(*_lines('00-01 01-02')) is None
+    assert get_cycle(*_lines('00-01 01-00 01-00')) is None
+    assert get_cycle(*_lines('00-01 00-10 00-11')) is None
+    assert get_cycle(*_lines('00-01 01-00 02-03 03-02')) is None
 
 
 def test_switched_line():
