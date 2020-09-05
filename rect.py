@@ -1,5 +1,5 @@
 from collections import namedtuple, defaultdict
-from itertools import combinations
+from tetragon import tetragon
 
 
 Line = namedtuple('Line', ['a', 'b'])
@@ -101,8 +101,25 @@ def _get_rect(lines):
     return None
 
 
+def _make_graph_points(lines):
+    graph = defaultdict(set)
+
+    for line in lines:
+        assert line.a != line.b
+
+        graph[line.a].add(line.b)
+        graph[line.b].add(line.a)
+
+    return graph
+
+
 def _rects(lines):
-    for quadro in combinations(lines, 4):
+    graph = _make_graph_points(lines)
+
+    for quadro in tetragon(graph):
+        a, b, c, d = quadro
+        quadro = Line(a, b), Line(b, c), Line(c, d), Line(d, a)
+
         rect = _get_rect(quadro)
 
         if rect is not None:
