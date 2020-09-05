@@ -1,4 +1,4 @@
-from rect import Line, Rect, rects, at_right_angle, get_cycle
+from rect import Line, Rect, rects, at_right_angle
 
 
 def _standard_rect(r):
@@ -97,25 +97,6 @@ def test_two_rects():
         _lines('00-01 10-00 11-10 01-11 11-12 12-02 02-01'),
         _rects('00-01-11-10 01-11-12-02')
     )
-
-
-def test_get_cycle():
-    assert get_cycle(*_lines(
-        '00-01 01-00')) == _points('00-01')
-
-    assert get_cycle(*_lines(
-        '00-01 01-02 02-03 03-04 04-00')) == _points('00-04-03-02-01')
-
-    assert get_cycle(*_lines(
-        '02-03 04-00 00-01 01-02 03-04')) == _points('02-01-00-04-03')
-
-    assert get_cycle(*_lines(
-        '03-02 04-00 00-01 02-01 03-04')) == _points('03-04-00-01-02')
-
-    assert get_cycle(*_lines('00-01 01-02')) is None
-    assert get_cycle(*_lines('00-01 01-00 01-00')) is None
-    assert get_cycle(*_lines('00-01 00-10 00-11')) is None
-    assert get_cycle(*_lines('00-01 01-00 02-03 03-02')) is None
 
 
 def test_switched_line():
