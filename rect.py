@@ -40,7 +40,7 @@ def _get_rect(cycle):
     return None
 
 
-def _make_graph_points(lines):
+def _make_graph(lines):
     graph = defaultdict(set)
 
     for line in lines:
@@ -53,7 +53,7 @@ def _make_graph_points(lines):
 
 
 def _rects(lines):
-    graph = _make_graph_points(lines)
+    graph = _make_graph(lines)
 
     for quadro in tetragon(graph):
         rect = _get_rect(quadro)
