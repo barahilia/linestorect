@@ -24,20 +24,15 @@ def at_right_angle(a, b, c):
     return inner_product == 0
 
 
-def _get_rect(cycle):
+def _is_rect(cycle):
     a, b, c, d = cycle
 
-    all_right_angle = (
+    return (
         at_right_angle(a, b, c) and
         at_right_angle(b, c, d) and
         at_right_angle(c, d, a) and
         at_right_angle(d, a, b)
     )
-
-    if all_right_angle:
-        return Rect(*cycle)
-
-    return None
 
 
 def _make_graph(lines):
@@ -56,10 +51,8 @@ def _rects(lines):
     graph = _make_graph(lines)
 
     for quadro in tetragon(graph):
-        rect = _get_rect(quadro)
-
-        if rect is not None:
-            yield rect
+        if _is_rect(quadro):
+            yield Rect(*quadro)
 
 
 def rects(*lines):
